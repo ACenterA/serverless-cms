@@ -8,7 +8,9 @@ for d in $(find . -mindepth 1 -maxdepth 1 -type d | grep -v \.git | grep -v node
    ln -snf /data/node_modules
    if [ -e package.json ]; then
       echo "Will run npm install from $(pwd)"
-      npm install
+      if [ ! -e /data/.no_npm_install ]; then
+         npm install
+      fi;
    fi;
 done;
 cd /data/grapejs-web-editor;
