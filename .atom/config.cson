@@ -1,0 +1,11 @@
+"*":
+  core:
+    telemetryConsent: "no"
+    themes: [
+      "atom-dark-ui"
+      "one-dark-syntax"
+    ]
+  editor:
+    fontSize: 15
+  "exception-reporting":
+    userId: "29c98a19-5445-438a-f2be-637f7cbd32ec"
