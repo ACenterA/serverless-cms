@@ -1,0 +1,23 @@
+version: '2'
+services:
+  cmsdev:
+    build: .
+    volumes:
+      - .:/data
+      - /tmp/.X11-unix/:/tmp/.X11-unix/
+      - /dev/shm:/dev/shm
+      - .atom:/home/atom/.atom
+      - ./node_modules:/home/atom/node_modules
+    network_mode: host
+    environment:
+      - DISPLAY
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - PATH=/home/atom/node_modules/serverless/bin/:/usr/bin:/bin
+    ports:
+     - "8080:8080"
+     - "8081:8081"
+     - "8090:8090"
+     - "8091:8091"
+    command: |
+      bash /usr/local/bin/docker-entrypoint.sh
