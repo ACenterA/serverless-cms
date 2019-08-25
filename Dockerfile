@@ -47,8 +47,6 @@ RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-ADD docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-
 USER root
 RUN apt-get update && \
     apt-get -y install python2.7 && \
@@ -57,7 +55,8 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 ADD hugo /usr/local/bin/hugo
-RUN chmod o+rx /usr/local/bin/hugo
+ADD docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod o+rx /usr/local/bin/hugo /usr/local/bin/docker-entrypoint.sh
 # USER atom
 WORKDIR /data/
 

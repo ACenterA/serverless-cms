@@ -46,11 +46,11 @@ HOME='${HOME}'
 cd $HOME;
 ln -snf /data/node_modules
 cd /data;
-for d in $(find . -mindepth 1 -maxdepth 1 -type d | grep -v \.git | grep -v node_modules); do
-   cd /data/$d;
+for d in \$(find . -mindepth 1 -maxdepth 1 -type d | grep -v \.git | grep -v node_modules); do
+   cd /data/\$d;
    ln -snf /data/node_modules
    if [ -e package.json ]; then
-      echo 'Will run npm install from $(pwd)'
+      echo 'Will run npm install from \$(pwd)'
       #if [ ! -e /data/.no_npm_install ]; then
       #   npm install
       #fi;

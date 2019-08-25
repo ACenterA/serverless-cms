@@ -60,6 +60,8 @@ help:
 	@printf '\n'
 	@printf '\n'
 	@printf '======================================================\n'
+down:
+	@docker-compose down
 
 reset: down
 	@docker volume prune
