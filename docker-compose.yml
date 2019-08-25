@@ -1,19 +1,38 @@
-version: '2'
+version: '3.3'
 services:
   cmsdev:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+         UID: "${UID:?You must define UID variable for permissions handling, look at README}"
+         GID: "${GID:?You must define GID variable for permissions handling, look at README}"
+         USER: "${USER:?You must define a USER variable for permissions handling, look at README}"
+         PASSWORD: "${PASSWORD:?You must define a PASSWORD variable see .env file, look at README}"
+    env_file:
+      - .env
     volumes:
       - .:/data
-      - /tmp/.X11-unix/:/tmp/.X11-unix/
-      - /dev/shm:/dev/shm
-      - .atom:/home/atom/.atom
+      #- /tmp/.X11-unix/:/tmp/.X11-unix/
+      #- /dev/shm:/dev/shm
+      #- .atom:/home/atom/.atom
+      - cms_node-modules:/data/serverless-cms-admin/node_modules
       - ./node_modules:/home/atom/node_modules
     network_mode: host
     environment:
-      - DISPLAY
       - AWS_ACCESS_KEY_ID
       - AWS_SECRET_ACCESS_KEY
-      - PATH=/home/atom/node_modules/serverless/bin/:/usr/bin:/bin
+      - HOME=/home/${USER}/
+      - PATH=/home/atom/node_modules/serverless/bin/:/usr/bin:/bin:/usr/sbin/:/usr/local/sbin/:/usr/local/bin/
+      - NODE_PATH=.:/home/atom/node_modules/serverless:/home/atom/node_modules
+      - SSH_AUTH_SOCK=/run/user/${UID}/keyring/ssh
+      - DBUS_SESSION_BUS_ADDRESS=${DBUS_SESSION_BUS_ADDRESS}
+      - USER
+      - DEBUG=true
+      - IS_WEBSITE_DEV=true
+      - DISPLAY=unix$DISPLAY
+      - GID
+      - UID
     ports:
      - "8080:8080"
      - "8081:8081"
@@ -21,3 +40,6 @@ services:
      - "8091:8091"
     command: |
       bash /usr/local/bin/docker-entrypoint.sh
+      
+volumes:
+  cms_node-modules:

@@ -21,27 +21,44 @@ RUN apt-get update && \
                     libnss3 \
                     gvfs-bin \
                     xdg-utils \
-                    python && \
+                    python \
+                    sudo && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/* && \
-    curl -L https://github.com/atom/atom/releases/download/${ATOM_VERSION}/atom-amd64.deb > /tmp/atom.deb && \
-    dpkg -i /tmp/atom.deb && \
-    rm -f /tmp/atom.deb && \
-    useradd -d /home/atom -m atom
+    rm -rf /var/lib/apt/lists/*
+# && \
+#    curl -L https://github.com/atom/atom/releases/download/${ATOM_VERSION}/atom-amd64.deb > /tmp/atom.deb && \
+#    dpkg -i /tmp/atom.deb && \
+#    rm -f /tmp/atom.deb && \
+#    useradd -d /home/atom -m atom
 
-RUN apm install project-manager
+# RUN apm install project-manager
 
 # install our dependencies and nodejs
 # Using Ubuntu
 #RUN curl -sL https://deb.nodesource.com/setup_6.x | bash -
-RUN curl -sL https://deb.nodesource.com/setup_7.x | bash - && \
+# RUN curl -sL https://deb.nodesource.com/setup_7.x | bash - && \
+ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBCONF_NONINTERACTIVE_SEEN=true
+ENV TZ=America/New_York
+RUN ln -snf /usr/share/zoneinfo/America/New_York /etc/localtime
+
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - && \
     apt-get install -y nodejs python-pip awscli && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 ADD docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
-USER atom
+USER root
+RUN apt-get update && \
+    apt-get -y install python2.7 && \
+    npm install -g --unsafe-perm node-sass && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+ADD hugo /usr/local/bin/hugo
+RUN chmod o+rx /usr/local/bin/hugo
+# USER atom
 WORKDIR /data/
 
 CMD ["/usr/local/bin/docker-entrypoint.sh"]
