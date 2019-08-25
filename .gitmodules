@@ -1,9 +1,6 @@
 [submodule "serverless-cms-admin"]
 	path = serverless-cms-admin
 	url = https://github.com/ACenterA/serverless-cms-admin.git
-[submodule "grapejs-web-editor"]
-	path = grapejs-web-editor
-	url = https://github.com/ACenterAInc/grapesjs.git
 [submodule "serverless-sample-hugosite"]
 	path = serverless-sample-hugosite
 	url = https://github.com/ACenterA/serverlesscms-example.git
