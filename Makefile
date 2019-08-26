@@ -82,6 +82,9 @@ exec:
 build:
 	docker-compose $(call DockerComposeFiles) build
 
+build-base:
+	@printf '[>] Building the docker containers\n'
+	docker build -f Dockerfile-base -t ${COMPOSE_PROJECT_NAME}_severless-cms-base:latest --build-arg USER=${USER} --build-arg UID=$(UID) --build-arg GID=$(GID) --build-arg PASSWORD=${PASSWORD} --build-arg OS_TYPE=${OS_TYPE} .
 
 # Launch local developmentt using Docker and the MySQL dockerized
 build:

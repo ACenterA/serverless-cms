@@ -16,15 +16,24 @@ services:
       #- /tmp/.X11-unix/:/tmp/.X11-unix/
       #- /dev/shm:/dev/shm
       #- .atom:/home/atom/.atom
+      - cms_node-modules:/data/node_modules
+      - cms_node-modules3:/home/${USER}/.npm
       - cms_node-modules:/data/serverless-cms-admin/node_modules
-      - ./node_modules:/home/atom/node_modules
+      - cms_node-modules1:/data/serverless-cms-admin/vfg-field-array/node_modules
+      - cms_node-modules2:/data/serverless-cms-admin/selo/node_modules
+      # - ./node_modules:/home/atom/node_modules
     network_mode: host
     environment:
       - AWS_ACCESS_KEY_ID
       - AWS_SECRET_ACCESS_KEY
       - HOME=/home/${USER}/
-      - PATH=/home/atom/node_modules/serverless/bin/:/usr/bin:/bin:/usr/sbin/:/usr/local/sbin/:/usr/local/bin/
-      - NODE_PATH=.:/home/atom/node_modules/serverless:/home/atom/node_modules
+      - PATH=/usr/lib/node_modules/serverless/bin/:/data/node_modules/serverless/bin/:/usr/bin:/bin:/usr/sbin/:/usr/local/sbin/:/usr/local/bin/
+#       - NODE_PATH=.:/usr/lib/node_modules:/data/serverless-cms-admin:/data/serverless-cms-admin/node_modules:/data/node_modules
+# 
+      # - NODE_PATH=.:/data/node_modules
+# /data/serverless-cms-admin/selo/node_modules
+# # erverless-cms-admin:/data/serverless-cms-admin/node_modules:/data/node_modules
+
       - SSH_AUTH_SOCK=/run/user/${UID}/keyring/ssh
       - DBUS_SESSION_BUS_ADDRESS=${DBUS_SESSION_BUS_ADDRESS}
       - USER
@@ -43,3 +52,6 @@ services:
       
 volumes:
   cms_node-modules:
+  cms_node-modules1:
+  cms_node-modules2:
+  cms_node-modules3:

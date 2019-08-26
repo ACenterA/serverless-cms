@@ -32,36 +32,72 @@ echo "root:$(pwgen -s)" | chpasswd 1>/dev/null 2>/dev/null || true
 export USER UID GID APP_HOME
 unset PASSWORD
 
-echo "Home is ${HOME}"
-cd $HOME;
-aa
+export WORKDIR=/data;
+echo "Home is ${WORKDIR}"
 
 PERM=$(stat -c %u /data/serverless-cms-admin/node_modules)
 if [ ${PERM} -eq 0 ]; then
   chown ${USER}: /data/serverless-cms-admin/node_modules
 fi
+mkdir -p /data/serverless-cms-admin/vfg-field-array/node_modules 2> /dev/null
+mkdir -p /data/serverless-cms-admin/selo/node_modules 2> /dev/null
+if [ -e /data/serverless-cms-admin/vfg-field-array/node_modules ]; then
+  PERM=$(stat -c %u /data/serverless-cms-admin/vfg-field-array/node_modules)
+  if [ ${PERM} -eq 0 ]; then
+    mkdir -p /data/serverless-cms-admin/vfg-field-array/node_modules
+    chown ${USER}: /data/serverless-cms-admin/vfg-field-array/node_modules
+  fi
+  mkdir -p /data/serverless-cms-admin/node_modules/vfg-field-array/node_modules
+  chown ${USER}: /data/serverless-cms-admin/node_modules/vfg-field-array/node_modules
+  chown ${USER}: /data/serverless-cms-admin/selo/node_modules
+fi
+
+# cd /data/serverless-cms-admin/ && npm link vfg-field-array
+# cd /data/serverless-cms-admin/ && npm link selo
+# # ln -snf /data/serverless-cms-admin/vfg-field-array /data/node_modules/vfg-field-array
+# # ln -snf /data/serverless-cms-admin/selo /data/node_modules/selo
+# 
+mkdir -p /data/serverless-cms-admin/node_modules/selo/node_modules
+chown -R ${USER}: /data/serverless-cms-admin/node_modules/selo
+chown -R ${USER}: /data/serverless-cms-admin/node_modules/vfg-field-array
+
+cd /data;
+# [ -e /data/.npm ] && rm -fr /data/.npm
+mkdir -p /home/${USER}/.npm && chown ${USER}: /home/${USER}/.npm
+chmod guo+rwx /home/${USER}/.npm
+[ -e node_modules ] && chown ${USER}: node_modules
+[ -e /data/serverless-cms-admin/vfg-field-array/.babelrc ] && rm -f /data/serverless-cms-admin/vfg-field-array/.babelrc
+#mkdir -p /data/.npm/_cacache
+#chown -R ${USER} /data/.npm
 
 su -m ${USER} /bin/bash -c "
-HOME='${HOME}'
-cd $HOME;
-ln -snf /data/node_modules
+whoami
 cd /data;
-for d in \$(find . -mindepth 1 -maxdepth 1 -type d | grep -v \.git | grep -v node_modules); do
+echo \"NODE PTH IS \${NODE_PATH}\"
+export NODE_PATH=\"${NODE_PATH}\"
+cd \$WORKDIR;
+for d in \$(find . -mindepth 1 -maxdepth 1 -type d | grep -v .git | grep -v node_modules); do
    cd /data/\$d;
-   ln -snf /data/node_modules
+   # [ -e node_modules ] && rm -fr node_modules;
+   # ln -snf /data/node_modules
    if [ -e package.json ]; then
       echo 'Will run npm install from \$(pwd)'
       #if [ ! -e /data/.no_npm_install ]; then
       #   npm install
       #fi;
-      npm install
+      [ ! -e /data/node_modules/.completed ] && npm install
    fi;
 done;
 #cd /data/grapejs-web-editor;
 #npm i
 #npm start dev & 
 cd /data/serverless-cms-admin;
-npm i
+# cd vfg-field-array && npm i && npm run build && cd -
+[ ! -e /data/node_modules/.completed ] && npm i -S vfg-field-array
+[ ! -e /data/node_modules/.completed ] && npm i -S selo
+[ ! -e /data/node_modules/.completed ] && npm i
+touch /data/node_modules/.completed
+# ./buildSelo.sh
 npm run dev &
 cd /data/serverless-sample-hugosite;
 if [ -e /data/hugo ]; then
