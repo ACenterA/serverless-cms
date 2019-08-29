@@ -92,7 +92,7 @@ done;
 #npm i
 #npm start dev & 
 cd /data/serverless-cms-admin;
-# cd vfg-field-array && npm i && npm run build && cd -
+[ ! -e /data/node_modules/.completed ] && (cd vfg-field-array && npm i && npm run build:es && cd -)
 [ ! -e /data/node_modules/.completed ] && npm i -S vfg-field-array
 [ ! -e /data/node_modules/.completed ] && npm i -S selo
 [ ! -e /data/node_modules/.completed ] && npm i
