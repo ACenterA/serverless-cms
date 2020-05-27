@@ -9,20 +9,39 @@ services:
          GID: "${GID:?You must define GID variable for permissions handling, look at README}"
          USER: "${USER:?You must define a USER variable for permissions handling, look at README}"
          PASSWORD: "${PASSWORD:?You must define a PASSWORD variable see .env file, look at README}"
+    user: ${USER}
     env_file:
       - .env
     volumes:
-      - .:/data
+      - .:/usr/app
       #- /tmp/.X11-unix/:/tmp/.X11-unix/
       #- /dev/shm:/dev/shm
       #- .atom:/home/atom/.atom
-      - cms_node-modules:/data/node_modules
-      - cms_node-modules3:/home/${USER}/.npm
-      - cms_node-modules:/data/serverless-cms-admin/node_modules
-      - cms_node-modules1:/data/serverless-cms-admin/vfg-field-array/node_modules
-      - cms_node-modules2:/data/serverless-cms-admin/selo/node_modules
+      #- cms_node-modules:/data/node_modules
+      #- cms_node-modules3:/home/${USER}/.npm
+      # - cms_node-modules:/data/serverless-cms-admin/node_modules
+      # - cms_node-modules1:/data/serverless-cms-admin/vfg-field-array/node_modules
+      # - cms_node-modules2:/data/serverless-cms-admin/selo/node_modules
       # - ./node_modules:/home/atom/node_modules
-    network_mode: host
+    labels:
+     - "traefik.enable=true"
+     - "traefik.http.routers.${COMPOSE_PROJECT_NAME}_cms-websites-v1.rule=Host(`cms-websites-v1.dev.acentera`)"
+     - "traefik.http.routers.${COMPOSE_PROJECT_NAME}_cms-websites-v1.entrypoints=http"
+
+     - "traefik.http.routers.${COMPOSE_PROJECT_NAME}_cms-websites-v1-frontend_sockhttps.rule=Host(`cms-websites-v1.dev.acentera`)"
+     - "traefik.http.routers.${COMPOSE_PROJECT_NAME}_cms-websites-v1-frontend_sockhttps.service=${COMPOSE_PROJECT_NAME}_cms-websites-v1-frontend_sockhttps"
+     - "traefik.http.routers.${COMPOSE_PROJECT_NAME}_cms-websites-v1-frontend_sockhttps.entrypoints=https"
+     - "traefik.http.routers.${COMPOSE_PROJECT_NAME}_cms-websites-v1-frontend_sockhttps.tls=true"
+     - "traefik.http.routers.${COMPOSE_PROJECT_NAME}_cms-websites-v1-frontend_sockhttps.middlewares=${COMPOSE_PROJECT_NAME}_cms-websites-v1-frontend_https"
+     - "traefik.http.services.${COMPOSE_PROJECT_NAME}_cms-websites-v1-frontend_sockhttps.loadbalancer.server.port=8090"
+
+     - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME}_cms-websites-v1-frontend_https.headers.accesscontrolalloworigin=origin-list-or-null"
+     - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME}_cms-websites-v1-frontend_https.headers.accesscontrolallowmethods=GET,OPTIONS,PUT"
+     - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME}_cms-websites-v1-frontend_https.headers.addvaryheader=true"
+    # network_mode: host
+    networks:
+      backend:
+
     environment:
       - AWS_ACCESS_KEY_ID
       - AWS_SECRET_ACCESS_KEY
@@ -42,16 +61,29 @@ services:
       - DISPLAY=unix$DISPLAY
       - GID
       - UID
-    ports:
-     - "8080:8080"
-     - "8081:8081"
-     - "8090:8090"
-     - "8091:8091"
+        #ports:
+        # - "8080:8080"
+        #  - "8081:8081"
+        # - "8090:8090"
+        # - "8091:8091"
     command: |
       bash /usr/local/bin/docker-entrypoint.sh
       
+#volumes:
+#   cms_node-modules:
+#   cms_node-modules1:
+#   cms_node-modules2:
+#   cms_node-modules3:
+networks:
+    backend:
+        external:
+            name: acentera_backend
+
+    traeffik:
+       external:
+          name: acentera_backend
+
 volumes:
-  cms_node-modules:
-  cms_node-modules1:
-  cms_node-modules2:
-  cms_node-modules3:
+   dynamodb:
+
+

@@ -15,7 +15,9 @@ OS_TYPE := undef
 
 GID := $(shell id -g)
 UID := $(shell id -u)
-USER := $(shell whoami)
+#USER := $(shell whoami)
+export GID
+export UID
 
 DockerComposeFiles = -f docker-compose.yml
 ifdef OS
@@ -80,7 +82,7 @@ exec:
 	docker-compose exec $(RUN_ARGS)
 
 build:
-	docker-compose $(call DockerComposeFiles) build
+	docker-compose $(call DockerComposeFiles) build --force
 
 build-base:
 	@printf '[>] Building the docker containers\n'
